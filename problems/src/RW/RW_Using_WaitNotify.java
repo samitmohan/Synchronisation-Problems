@@ -1,3 +1,4 @@
+package RW;
 public class RW_Using_WaitNotify {
     public static void main(String[] args) {
         if (args.length < 2) {

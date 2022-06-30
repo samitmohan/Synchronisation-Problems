@@ -1,3 +1,4 @@
+package RW;
 public class Reader extends Thread {
     private static int readers = 0; // number of readers
     private int number;

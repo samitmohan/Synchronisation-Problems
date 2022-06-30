@@ -6,6 +6,7 @@ class RW_Using_Mutex {
     // volatile : let the JVM know that a thread accessing the variable must always merge its own private copy of the variable with the master copy in the memory.
     // for thread safety.
     volatile static int readCount = 0;
+
     static class Read implements Runnable {
         @Override
         public void run() {

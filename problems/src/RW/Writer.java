@@ -1,3 +1,4 @@
+package RW;
 public class Writer extends Thread {
     private static int writers = 0; // number of writers
     private int number;
