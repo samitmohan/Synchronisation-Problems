@@ -10,22 +10,20 @@ import java.util.concurrent.locks.ReentrantLock;
 public class PC_Using_Mutex {
 
     public static void main(String[] args) {
-
-        // Object on which producer and consumer thread will operate
-        ProducerConsumerImpl sharedObject = new ProducerConsumerImpl();
+        // shared object (global)
+        ProdCon sharedObject = new ProdCon();
 
         // creating producer and consumer threads
         Producer p = new Producer(sharedObject);
         Consumer c = new Consumer(sharedObject);
 
-        // starting producer and consumer threads
+        // start
         p.start();
         c.start();
     }
-
 }
 
-class ProducerConsumerImpl {
+class ProdCon {
     // producer consumer problem data
     private static final int CAPACITY = 10;
     private final Queue queue = new LinkedList<>();
@@ -36,24 +34,21 @@ class ProducerConsumerImpl {
     private final Condition bufferNotFull = aLock.newCondition();
     private final Condition bufferNotEmpty = aLock.newCondition();
 
+    // producer
     public void put() throws InterruptedException {
         aLock.lock();
         try {
             while (queue.size() == CAPACITY) {
-                System.out.println(Thread.currentThread().getName()
-                        + " : Buffer is full, waiting");
+                System.out.println(Thread.currentThread().getName() + " : Buffer is full, waiting");
                 bufferNotEmpty.await();
             }
 
             int number = theRandom.nextInt();
             boolean isAdded = queue.offer(number);
             if (isAdded) {
-                System.out.printf("%s added %d into queue %n", Thread
-                        .currentThread().getName(), number);
-
+                System.out.println(Thread.currentThread().getName() + " added " + number + " into queue ");
                 // signal consumer thread that, buffer has element now
-                System.out.println(Thread.currentThread().getName()
-                        + " : Signalling that buffer is no more empty now");
+                System.out.println(Thread.currentThread().getName() + " : Signalling that buffer is no more empty now");
                 bufferNotFull.signalAll();
             }
         } finally {
@@ -61,37 +56,33 @@ class ProducerConsumerImpl {
         }
     }
 
+    // consumer
     public void get() throws InterruptedException {
         aLock.lock();
         try {
             while (queue.size() == 0) {
-                System.out.println(Thread.currentThread().getName()
-                        + " : Buffer is empty, waiting");
+                System.out.println(Thread.currentThread().getName() + " : Buffer is empty, waiting");
                 bufferNotFull.await();
             }
 
             Integer value = (Integer) queue.poll();
             if (value != null) {
-                System.out.printf("%s consumed %d from queue %n", Thread
-                        .currentThread().getName(), value);
-
+                System.out.println(Thread.currentThread().getName() + " consumed " + value + "from queue");
                 // signal producer thread that, buffer may be empty now
-                System.out.println(Thread.currentThread().getName()
-                        + " : Signalling that buffer may be empty now");
+                System.out.println(Thread.currentThread().getName() + " : Signalling that buffer may be empty now");
                 bufferNotEmpty.signalAll();
             }
-
         } finally {
             aLock.unlock();
         }
     }
 }
 
+// producer main class
 class Producer extends Thread {
-    ProducerConsumerImpl pc;
-
-    public Producer(ProducerConsumerImpl sharedObject) {
-        super("PRODUCER");
+    ProdCon pc;
+    public Producer(ProdCon sharedObject) {
+        super("Producer");
         this.pc = sharedObject;
     }
 
@@ -105,11 +96,11 @@ class Producer extends Thread {
     }
 }
 
+// consumer main class
 class Consumer extends Thread {
-    ProducerConsumerImpl pc;
-
-    public Consumer(ProducerConsumerImpl sharedObject) {
-        super("CONSUMER");
+    ProdCon pc;
+    public Consumer(ProdCon sharedObject) {
+        super("Consumer");
         this.pc = sharedObject;
     }
 

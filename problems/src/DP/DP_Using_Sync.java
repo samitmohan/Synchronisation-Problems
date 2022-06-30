@@ -52,7 +52,7 @@ class DiningPhilosopher {
         for (int i = 0; i < philosophers.length; i++) {
             Object lf = forks[i];
             Object rf = forks[(i + 1) % forks.length];
-            // solution -> avoiding deadlock
+            // solution -> avoiding deadlock (make sure the last philosopher picks up right fork and then left)
             if (i == philosophers.length - 1) {
                 // last philosopher picks up right fork first.
                 philosophers[i] = new Philosopher(rf, lf);

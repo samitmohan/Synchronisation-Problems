@@ -4,25 +4,27 @@ class RW_Using_Mutex {
     static Semaphore readLock = new Semaphore(1);
     static Semaphore writeLock = new Semaphore(1);
     // volatile : let the JVM know that a thread accessing the variable must always merge its own private copy of the variable with the master copy in the memory.
+    // for thread safety.
     volatile static int readCount = 0;
     static class Read implements Runnable {
         @Override
         public void run() {
             try {
-                //Acquire Section
+                // Lock
                 readLock.acquire();
-                readCount++;
+                readCount++; // increase count
                 if (readCount == 1) {
                     writeLock.acquire();
                 }
+                // Unlock
                 readLock.release();
 
-                //Reading section
-                System.out.println("Thread " + Thread.currentThread().getName() + " is READING");
+                // Reading
+                System.out.println("Thread " + Thread.currentThread().getName() + " reading");
                 Thread.sleep(1500);
-                System.out.println("Thread " + Thread.currentThread().getName() + " has FINISHED READING");
+                System.out.println("Thread " + Thread.currentThread().getName() + " finished reading");
 
-                //Releasing section
+                // Releasing section
                 readLock.acquire();
                 readCount--;
                 if (readCount == 0) {
@@ -39,10 +41,12 @@ class RW_Using_Mutex {
         @Override
         public void run() {
             try {
+                // lock
                 writeLock.acquire();
-                System.out.println("Thread " + Thread.currentThread().getName() + " is WRITING");
+                System.out.println("Thread " + Thread.currentThread().getName() + " writing");
                 Thread.sleep(2500);
-                System.out.println("Thread " + Thread.currentThread().getName() + " has finished WRITING");
+                System.out.println("Thread " + Thread.currentThread().getName() + " finished writing");
+                // unlock
                 writeLock.release();
             } catch (InterruptedException e) {
                 System.out.println(e.getMessage());
@@ -51,6 +55,7 @@ class RW_Using_Mutex {
     }
 
     public static void main(String[] args) throws Exception {
+        // 4 threads -> 3 readers, 1 writer.
         Read read = new Read();
         Write write = new Write();
         Thread t1 = new Thread(read);

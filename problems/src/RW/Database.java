@@ -1,11 +1,5 @@
-// database
-
 public class Database {
     private int readers; // number of active readers
-
-    /**
-     * Initializes this database.
-     */
     public Database() {
         this.readers = 0;
     }
@@ -22,6 +16,7 @@ public class Database {
         } catch (InterruptedException e) {
         }
 
+        // unlock
         synchronized (this) {
             System.out.println("Reader " + number + " stops reading.");
             this.readers--;
