@@ -1,4 +1,4 @@
-// Java program to implement solution of producer
+package PC;// Java program to implement solution of producer
 // consumer problem.
 
 import java.util.LinkedList;
